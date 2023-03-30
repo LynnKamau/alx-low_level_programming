@@ -1,90 +1,73 @@
-#include "main.h"
-#include <stdio.h>
+/**
+ * get_hi - get highest index character array `s'
+ * @s: character array to check
+ *
+ * Return: highest index
+ */
+int get_hi(char *s)
+{
+	int i;
+
+	for (i = 0; s[i]; ++i)
+		;
+	return (i);
+}
 
 /**
- * infinite_add - adds two integers stored as strings
+ * rev_str - reverse string `s' in place
+ * @s: string to reverse
+ * @hi: highest index (below '\0') in `s'
+ */
+void rev_str(char *s, int hi)
+{
+	int lo, tmp;
+
+	for (lo = 0; lo < hi; ++lo, --hi)
+	{
+		tmp = s[lo];
+		s[lo] = s[hi];
+		s[hi] = tmp;
+	}
+}
+
+/**
+ * infinite_add - add `n1' and `n2' as though they were numbers
+ * @n1: character string representing `n1'
+ * @n2: character string representing `n2'
+ * @r: uninitialized array of length `size_r' to hold result
+ * @size_r: size of array `r'
  *
- * @n1: first integer string to add
- * @n2: second integer string to add
- * @r: array to store resulting string in
- * @size_r: size of array r
+ * Description: Add unbounded numbers `n1' and `n2' and place result
+ * in `r'. Assume positive numbers or `0' and that input strings will
+ * be composed only of digits and will not be empty.
  *
- * Return: the summed string in r. If r is too small for the result,
- * return 0;
+ * Return: pointer to `r' or null pointer if result is too large for `r'
  */
 char *infinite_add(char *n1, char *n2, char *r, int size_r)
 {
-	int carry = 0, index = 0, index2;
-	char *s1 = n1, *s2 = n2;
+	int i, res, carry, len1, len2;
 
-	while (*s1 != 0)
-		s1++;
-	while (*s2 != 0)
-		s2++;
-	size_r--;
-	r[size_r] = 0;
-	s1--;
-	s2--;
-	while (s2 != n2 - 1 && s1 != n1 - 1)
+	len1 = get_hi(n1);
+	len2 = get_hi(n2);
+	for (carry = 0, i = 0; i < size_r - 1; ++i)
 	{
-		r[index] = *s2 - '0' + *s1 + carry;
-		carry = 0;
-		if (r[index] > '9')
+		res = carry;
+		if (len1 != 0)
+			res += n1[--len1] - '0';
+		if (len2 != 0)
+			res += n2[--len2] - '0';
+		if (len1 == 0 && len2 == 0 && res == 0)
 		{
-			carry++;
-			r[index] -= 10;
+			r[i] = '\0';
+			break;
 		}
-		index++;
-		s2--;
-		s1--;
-		if (size_r == index && (s1 != n1 - 1 || s2 != n2 - 1 || carry == 1))
-			return (0);
+		carry = res / 10;
+		r[i] = res % 10 + '0';
+		r[i + 1] = '\0';
 	}
-	while (s1 != n1 - 1)
-	{
-		r[index] = *s1 + carry;
-		carry = 0;
-		if (r[index] > '9')
-		{
-			carry = 1;
-			r[index] -= 10;
-		}
-		s1--;
-		index++;
-		if (size_r == index && (s1 != n1 - 1 ||  carry == 1))
-			return (0);
-	}
-	while (s2 != n2 - 1)
-	{
-		r[index] = *s2 + carry;
-		carry = 0;
-		if (r[index] > '9')
-		{
-			carry = 1;
-			r[index] -= 10;
-		}
-		s2--;
-		index++;
-		if (size_r == index && (s2 != n2 - 1 || carry == 1))
-			return (0);
-	}
-	if (carry == 1)
-	{
-		r[index] = '1';
-		r[index + 1] = 0;
-	}
-	else
-	{
-		r[index--] = 0;
-	}
-	index2 = 0;
-	while (index2 <= index)
-	{
-		carry = r[index];
-		r[index] = r[index2];
-		r[index2] = carry;
-		index--;
-		index2++;
-	}
+	if (carry || len1 || len2)
+		return (0x0);
+	i = get_hi(r);
+	rev_str(r, --i);
 	return (r);
 }
