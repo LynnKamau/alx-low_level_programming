@@ -1,3 +1,7 @@
+#include "main.h"
+#include <stdio.h>
+#include <string.h>
+
 /**
  * get_hi - get highest index character array `s'
  * @s: character array to check
